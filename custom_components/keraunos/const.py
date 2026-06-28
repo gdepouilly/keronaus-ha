@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import time
 
 DOMAIN = "keraunos"
 
@@ -15,7 +15,12 @@ USER_AGENT = (
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 )
 
-DEFAULT_SCAN_INTERVAL = timedelta(minutes=30)
+# Keraunos publishes the daily forecast once, between 08:00 and 09:00 French
+# time. Rather than polling, we refresh just after that window (and a midday
+# safety net), anchored to Europe/Paris so it is correct regardless of the Home
+# Assistant host timezone and across DST.
+PARIS_TZ = "Europe/Paris"
+REFRESH_TIMES: tuple[time, ...] = (time(9, 15), time(12, 15))
 
 CONF_INSEE = "insee"
 

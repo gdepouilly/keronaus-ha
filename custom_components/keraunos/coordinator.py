@@ -16,7 +16,6 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from .const import (
     BADGE_COUNT,
     BASE_URL,
-    DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     PCT_TO_LEVEL,
     PROBA_COLOR,
@@ -118,7 +117,11 @@ def parse_risk(html: str) -> dict[str, object]:
 
 
 class KeraunosCoordinator(DataUpdateCoordinator[dict[str, object]]):
-    """Fetch and parse the Keraunos storm-risk page on a schedule."""
+    """Fetch and parse the Keraunos storm-risk page.
+
+    No periodic polling: refreshes are driven by ``__init__.py`` at fixed
+    Europe/Paris times after the daily publish window (plus once on startup).
+    """
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry, insee: str) -> None:
         """Initialise the coordinator for a single commune."""
@@ -126,7 +129,7 @@ class KeraunosCoordinator(DataUpdateCoordinator[dict[str, object]]):
             hass,
             _LOGGER,
             name=f"{DOMAIN}_{insee}",
-            update_interval=DEFAULT_SCAN_INTERVAL,
+            update_interval=None,
             config_entry=entry,
         )
         self.insee = insee
