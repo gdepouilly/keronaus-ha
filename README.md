@@ -11,16 +11,40 @@ API for these values.
 ## Sensors
 
 For the configured commune, the integration creates four sensors reflecting the
-"Aujourd'hui" (today) block of the page:
+"Aujourd'hui" (today) block of the page. **Each sensor's state is the gravity
+level `0`–`5`**, so it works directly with gauges, color thresholds, history and
+automations. The human-readable text, official colour and range are exposed as
+attributes.
 
-| Sensor | Example state |
-| --- | --- |
-| Risque d'orages | `Risque d'orages forts` |
-| Probabilité d'orages | `Probabilité modérée d'orages` |
-| Probabilité de grêle > 5 cm | `Probabilité très faible de grêle > 5 cm` |
-| Probabilité de tornade | `Probabilité très faible de tornade` |
+| Sensor | State (level) | Key attributes |
+| --- | --- | --- |
+| Risque d'orages | `0`–`5` | `description`, `level_label` (`aucun`→`extrême`), `color`, `level_max` |
+| Probabilité d'orages | `0`–`5` | `description`, `probability_range` (e.g. `30 à 45 %`), `color`, `level_max` |
+| Probabilité de grêle > 5 cm | `0`–`5` | `description`, `probability_range`, `color`, `level_max` |
+| Probabilité de tornade | `0`–`5` | `description`, `probability_range`, `color`, `level_max` |
+
+Level scale:
+
+- **Risque d'orages** (`previ` severity): `0` aucun · `1` marginal · `2` ordinaire ·
+  `3` marqué · `4` sévère · `5` extrême — coloured grey, beige `#e7e5cf`,
+  yellow `#FFF479`, orange `#ff8b0f`, red `#FF0000`, magenta `#FF00FF`.
+- **Probabilités**: `0` nulle · `1` 5–15 % · `2` 15–30 % · `3` 30–45 % ·
+  `4` 45–60 % · `5` >60 %.
 
 The page is polled every 30 minutes.
+
+## Dashboard
+
+Ready-made Lovelace cards are in
+[`dashboards/keraunos-gauges.yaml`](dashboards/keraunos-gauges.yaml):
+
+- **Gauge cards** (built-in, no extra install) — a 0–5 needle gauge per category
+  with green/yellow/red severity bands.
+- **Mushroom template chips** (needs the HACS *Mushroom* frontend) — colour-coded
+  by gravity level, showing the French label; with a card-mod snippet for the
+  exact Keraunos hex colours from the `color` attribute.
+
+Adjust the `sensor.altorf_…` entity ids in the YAML to match your commune.
 
 ## Installation
 

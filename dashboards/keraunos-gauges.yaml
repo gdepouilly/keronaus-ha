@@ -1,0 +1,85 @@
+# Ready-made Lovelace cards for the Keraunos Orages integration.
+#
+# Each sensor's STATE is the gravity level 0..5; the human text, official colour
+# and probability range are attributes (description / color / level_label /
+# probability_range / level_max).
+#
+# IMPORTANT: entity_ids below assume the commune device is named "Altorf"
+# (entities like sensor.altorf_risque_d_orages). Replace the `sensor.altorf_…`
+# ids with your own — check Settings → Devices & Services → Keraunos Orages →
+# the entity ids of your commune.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Option A — Built-in gauge cards (no extra cards to install)
+# Shows the number + a needle on a 0..5 scale, coloured green/yellow/red.
+# ─────────────────────────────────────────────────────────────────────────────
+type: horizontal-stack
+cards:
+  - type: gauge
+    entity: sensor.altorf_risque_d_orages
+    name: Risque d'orages
+    min: 0
+    max: 5
+    needle: true
+    severity:
+      green: 0
+      yellow: 2
+      red: 4
+  - type: gauge
+    entity: sensor.altorf_probabilite_d_orages
+    name: Proba orages
+    min: 0
+    max: 5
+    needle: true
+    severity:
+      green: 0
+      yellow: 2
+      red: 4
+  - type: gauge
+    entity: sensor.altorf_probabilite_de_grele_5_cm
+    name: Proba grêle
+    min: 0
+    max: 5
+    needle: true
+    severity:
+      green: 0
+      yellow: 2
+      red: 4
+  - type: gauge
+    entity: sensor.altorf_probabilite_de_tornade
+    name: Proba tornade
+    min: 0
+    max: 5
+    needle: true
+    severity:
+      green: 0
+      yellow: 2
+      red: 4
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Option B — Mushroom template chips (requires the HACS "Mushroom" frontend)
+# Colour-codes each category by its gravity level and shows the French label as
+# the secondary text. The icon colour escalates grey → green → yellow → orange
+# → red → purple to mirror the Keraunos scale.
+# ─────────────────────────────────────────────────────────────────────────────
+# type: custom:mushroom-template-card
+# entity: sensor.altorf_risque_d_orages
+# primary: Risque d'orages
+# secondary: "{{ state_attr(entity, 'description') }}"
+# icon: mdi:weather-lightning
+# icon_color: >-
+#   {{ ['grey','green','yellow','orange','red','purple'][states(entity) | int(0)] }}
+# badge_icon: >-
+#   {{ 'mdi:alert' if states(entity) | int(0) >= 3 else '' }}
+# badge_color: red
+#
+# Repeat the card per sensor (swap entity + primary + icon):
+#   sensor.altorf_probabilite_d_orages       → mdi:weather-lightning-rainy
+#   sensor.altorf_probabilite_de_grele_5_cm  → mdi:weather-hail
+#   sensor.altorf_probabilite_de_tornade     → mdi:weather-tornado
+#
+# For the EXACT Keraunos hex colours (e.g. orange #ff8b0f), install card-mod and
+# style from the `color` attribute, e.g.:
+#   card_mod:
+#     style: |
+#       ha-card { --card-mod-icon-color: {{ state_attr(entity, 'color') }}; }
