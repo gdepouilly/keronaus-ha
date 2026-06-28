@@ -1,8 +1,12 @@
 # Ready-made Lovelace cards for the Keraunos Orages integration.
 #
-# Each sensor's STATE is the gravity level 0..5; the human text, official colour
-# and probability range are attributes (description / color / level_label /
-# probability_range / level_max).
+# Each sensor's STATE is the human-readable French text (e.g. "Risque d'orages
+# forts"). The gravity level 0..5, official colour and probability range are
+# ATTRIBUTES: level / level_max / color / level_label / probability_range.
+#
+# Because the state is text, a built-in gauge (which reads the numeric *state*)
+# needs the level surfaced as a number first — see Option A. Option C avoids that
+# with a custom card that can read the attribute directly.
 #
 # IMPORTANT: entity_ids below assume the commune device is named "Altorf"
 # (entities like sensor.altorf_risque_d_orages). Replace the `sensor.altorf_…`
@@ -11,12 +15,34 @@
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Option A — Built-in gauge cards (no extra cards to install)
-# Shows the number + a needle on a 0..5 scale, coloured green/yellow/red.
-# ─────────────────────────────────────────────────────────────────────────────
+#
+# Step 1: add template sensors that expose the level as a numeric state.
+# Put this in configuration.yaml (then restart):
+#
+# template:
+#   - sensor:
+#       - name: "Altorf risque orages niveau"
+#         unique_id: altorf_risque_orages_niveau
+#         state: "{{ state_attr('sensor.altorf_risque_d_orages', 'level') }}"
+#         state_class: measurement
+#       - name: "Altorf proba orages niveau"
+#         unique_id: altorf_proba_orages_niveau
+#         state: "{{ state_attr('sensor.altorf_probabilite_d_orages', 'level') }}"
+#         state_class: measurement
+#       - name: "Altorf proba grele niveau"
+#         unique_id: altorf_proba_grele_niveau
+#         state: "{{ state_attr('sensor.altorf_probabilite_de_grele_5_cm', 'level') }}"
+#         state_class: measurement
+#       - name: "Altorf proba tornade niveau"
+#         unique_id: altorf_proba_tornade_niveau
+#         state: "{{ state_attr('sensor.altorf_probabilite_de_tornade', 'level') }}"
+#         state_class: measurement
+#
+# Step 2: gauge those numeric sensors.
 type: horizontal-stack
 cards:
   - type: gauge
-    entity: sensor.altorf_risque_d_orages
+    entity: sensor.altorf_risque_orages_niveau
     name: Risque d'orages
     min: 0
     max: 5
@@ -26,7 +52,7 @@ cards:
       yellow: 2
       red: 4
   - type: gauge
-    entity: sensor.altorf_probabilite_d_orages
+    entity: sensor.altorf_proba_orages_niveau
     name: Proba orages
     min: 0
     max: 5
@@ -36,7 +62,7 @@ cards:
       yellow: 2
       red: 4
   - type: gauge
-    entity: sensor.altorf_probabilite_de_grele_5_cm
+    entity: sensor.altorf_proba_grele_niveau
     name: Proba grêle
     min: 0
     max: 5
@@ -46,7 +72,7 @@ cards:
       yellow: 2
       red: 4
   - type: gauge
-    entity: sensor.altorf_probabilite_de_tornade
+    entity: sensor.altorf_proba_tornade_niveau
     name: Proba tornade
     min: 0
     max: 5
@@ -57,29 +83,50 @@ cards:
       red: 4
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Option B — Mushroom template chips (requires the HACS "Mushroom" frontend)
-# Colour-codes each category by its gravity level and shows the French label as
-# the secondary text. The icon colour escalates grey → green → yellow → orange
-# → red → purple to mirror the Keraunos scale.
+# Option B — Entities card (no install, no templates)
+# Shows the text state directly; tap an entity to see the level/color attributes.
+# ─────────────────────────────────────────────────────────────────────────────
+# type: entities
+# title: Risque orageux — Altorf
+# entities:
+#   - entity: sensor.altorf_risque_d_orages
+#     name: Risque d'orages
+#   - entity: sensor.altorf_probabilite_d_orages
+#     name: Probabilité d'orages
+#   - entity: sensor.altorf_probabilite_de_grele_5_cm
+#     name: Probabilité grêle > 5 cm
+#   - entity: sensor.altorf_probabilite_de_tornade
+#     name: Probabilité tornade
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Option C — Gauge straight from the attribute (needs HACS "gauge-card")
+# custom:gauge-card can read a numeric attribute, so no template sensor needed.
+# ─────────────────────────────────────────────────────────────────────────────
+# type: custom:gauge-card
+# entity: sensor.altorf_risque_d_orages
+# attribute: level
+# name: Risque d'orages
+# min: 0
+# max: 5
+# severity:
+#   green: 0
+#   yellow: 2
+#   red: 4
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Option D — Mushroom template chips (needs HACS "Mushroom" frontend)
+# Colour-codes by gravity level and shows the text as secondary.
 # ─────────────────────────────────────────────────────────────────────────────
 # type: custom:mushroom-template-card
 # entity: sensor.altorf_risque_d_orages
 # primary: Risque d'orages
-# secondary: "{{ state_attr(entity, 'description') }}"
+# secondary: "{{ states(entity) }}"
 # icon: mdi:weather-lightning
 # icon_color: >-
-#   {{ ['grey','green','yellow','orange','red','purple'][states(entity) | int(0)] }}
-# badge_icon: >-
-#   {{ 'mdi:alert' if states(entity) | int(0) >= 3 else '' }}
-# badge_color: red
+#   {{ ['grey','green','yellow','orange','red','purple'][state_attr(entity,'level') | int(0)] }}
 #
-# Repeat the card per sensor (swap entity + primary + icon):
-#   sensor.altorf_probabilite_d_orages       → mdi:weather-lightning-rainy
-#   sensor.altorf_probabilite_de_grele_5_cm  → mdi:weather-hail
-#   sensor.altorf_probabilite_de_tornade     → mdi:weather-tornado
-#
-# For the EXACT Keraunos hex colours (e.g. orange #ff8b0f), install card-mod and
-# style from the `color` attribute, e.g.:
+# For the EXACT Keraunos hex colours, install card-mod and style from the
+# `color` attribute, e.g.:
 #   card_mod:
 #     style: |
 #       ha-card { --card-mod-icon-color: {{ state_attr(entity, 'color') }}; }

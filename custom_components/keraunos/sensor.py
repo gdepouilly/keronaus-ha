@@ -4,10 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from homeassistant.components.sensor import (
-    SensorEntity,
-    SensorStateClass,
-)
+from homeassistant.components.sensor import SensorEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -32,10 +29,13 @@ async def async_setup_entry(
 
 
 class KeraunosSensor(CoordinatorEntity[KeraunosCoordinator], SensorEntity):
-    """A single storm-risk gravity level (0..5) for the configured commune."""
+    """A single storm-risk category for the configured commune.
+
+    The state is the human-readable French text; the gravity level (0..5),
+    colour and range are exposed as attributes.
+    """
 
     _attr_has_entity_name = True
-    _attr_state_class = SensorStateClass.MEASUREMENT
 
     def __init__(
         self, coordinator: KeraunosCoordinator, insee: str, key: str
@@ -62,18 +62,18 @@ class KeraunosSensor(CoordinatorEntity[KeraunosCoordinator], SensorEntity):
         return self.coordinator.data.get(self._key) or {}
 
     @property
-    def native_value(self) -> int | None:
-        """Return the current gravity level (0..5)."""
-        return self._entry.get("level")
+    def native_value(self) -> str | None:
+        """Return the human-readable risk text."""
+        return self._entry.get("description")
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
-        """Expose the human label, colour and range alongside the level."""
+        """Expose the gravity level (0..5), colour and range as attributes."""
         entry = self._entry
         attrs: dict[str, Any] = {
-            "description": entry.get("description"),
-            "color": entry.get("color"),
+            "level": entry.get("level"),
             "level_max": LEVEL_MAX,
+            "color": entry.get("color"),
         }
         if self._kind == "severity":
             attrs["level_label"] = entry.get("label")

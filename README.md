@@ -11,17 +11,17 @@ API for these values.
 ## Sensors
 
 For the configured commune, the integration creates four sensors reflecting the
-"Aujourd'hui" (today) block of the page. **Each sensor's state is the gravity
-level `0`–`5`**, so it works directly with gauges, color thresholds, history and
-automations. The human-readable text, official colour and range are exposed as
-attributes.
+"Aujourd'hui" (today) block of the page. **Each sensor's state is the
+human-readable French text** (e.g. `Risque d'orages forts`). The gravity level
+`0`–`5`, official colour and range are exposed as **attributes**, so you can
+still build gauges, colour-coding and automations from `level`.
 
-| Sensor | State (level) | Key attributes |
+| Sensor | State (text) | Key attributes |
 | --- | --- | --- |
-| Risque d'orages | `0`–`5` | `description`, `level_label` (`aucun`→`extrême`), `color`, `level_max` |
-| Probabilité d'orages | `0`–`5` | `description`, `probability_range` (e.g. `30 à 45 %`), `color`, `level_max` |
-| Probabilité de grêle > 5 cm | `0`–`5` | `description`, `probability_range`, `color`, `level_max` |
-| Probabilité de tornade | `0`–`5` | `description`, `probability_range`, `color`, `level_max` |
+| Risque d'orages | `Risque d'orages forts` | `level` (0–5), `level_label` (`aucun`→`extrême`), `color`, `level_max` |
+| Probabilité d'orages | `Probabilité modérée d'orages` | `level` (0–5), `probability_range` (e.g. `30 à 45 %`), `color`, `level_max` |
+| Probabilité de grêle > 5 cm | `Probabilité très faible…` | `level` (0–5), `probability_range`, `color`, `level_max` |
+| Probabilité de tornade | `Probabilité très faible…` | `level` (0–5), `probability_range`, `color`, `level_max` |
 
 Level scale:
 
@@ -36,13 +36,16 @@ The page is polled every 30 minutes.
 ## Dashboard
 
 Ready-made Lovelace cards are in
-[`dashboards/keraunos-gauges.yaml`](dashboards/keraunos-gauges.yaml):
+[`dashboards/keraunos-gauges.yaml`](dashboards/keraunos-gauges.yaml). Since the
+sensor state is text, gauges read the numeric `level` one of two ways:
 
-- **Gauge cards** (built-in, no extra install) — a 0–5 needle gauge per category
-  with green/yellow/red severity bands.
-- **Mushroom template chips** (needs the HACS *Mushroom* frontend) — colour-coded
-  by gravity level, showing the French label; with a card-mod snippet for the
-  exact Keraunos hex colours from the `color` attribute.
+- **Gauge cards** (built-in, no install) — add a small template sensor that
+  exposes `level` as its numeric state, then gauge that (snippet included).
+- **Entities card** (built-in) — shows the text directly, level/colour on tap.
+- **`custom:gauge-card`** (HACS) — gauges the `level` attribute directly, no
+  template sensor needed.
+- **Mushroom template chips** (HACS *Mushroom*) — colour-coded by `level`, with a
+  card-mod snippet for the exact Keraunos hex colours from the `color` attribute.
 
 Adjust the `sensor.altorf_…` entity ids in the YAML to match your commune.
 
