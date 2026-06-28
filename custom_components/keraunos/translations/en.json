@@ -1,0 +1,38 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Keraunos Orages",
+        "description": "Enter the 5-digit INSEE code of your commune (e.g. 67008 for Altorf). You can find it on the Keraunos website URL.",
+        "data": {
+          "insee": "INSEE code"
+        }
+      }
+    },
+    "error": {
+      "invalid_format": "The INSEE code must be 5 characters (digits, or 2A/2B for Corsica).",
+      "invalid_insee": "No commune matches this INSEE code.",
+      "cannot_connect": "Could not reach keraunos.org. Try again later."
+    },
+    "abort": {
+      "already_configured": "This commune is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Change commune",
+        "description": "Enter a new 5-digit INSEE code for this commune.",
+        "data": {
+          "insee": "INSEE code"
+        }
+      }
+    },
+    "error": {
+      "invalid_format": "The INSEE code must be 5 characters (digits, or 2A/2B for Corsica).",
+      "invalid_insee": "No commune matches this INSEE code.",
+      "cannot_connect": "Could not reach keraunos.org. Try again later.",
+      "already_configured": "Another entry already uses this commune."
+    }
+  }
+}

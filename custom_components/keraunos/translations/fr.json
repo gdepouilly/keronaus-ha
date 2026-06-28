@@ -1,0 +1,38 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Keraunos Orages",
+        "description": "Saisissez le code INSEE à 5 caractères de votre commune (ex. 67008 pour Altorf). Il figure dans l'URL du site Keraunos.",
+        "data": {
+          "insee": "Code INSEE"
+        }
+      }
+    },
+    "error": {
+      "invalid_format": "Le code INSEE doit comporter 5 caractères (chiffres, ou 2A/2B pour la Corse).",
+      "invalid_insee": "Aucune commune ne correspond à ce code INSEE.",
+      "cannot_connect": "Impossible de joindre keraunos.org. Réessayez plus tard."
+    },
+    "abort": {
+      "already_configured": "Cette commune est déjà configurée."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Changer de commune",
+        "description": "Saisissez un nouveau code INSEE à 5 caractères pour cette commune.",
+        "data": {
+          "insee": "Code INSEE"
+        }
+      }
+    },
+    "error": {
+      "invalid_format": "Le code INSEE doit comporter 5 caractères (chiffres, ou 2A/2B pour la Corse).",
+      "invalid_insee": "Aucune commune ne correspond à ce code INSEE.",
+      "cannot_connect": "Impossible de joindre keraunos.org. Réessayez plus tard.",
+      "already_configured": "Une autre entrée utilise déjà cette commune."
+    }
+  }
+}

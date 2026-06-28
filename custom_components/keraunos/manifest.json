@@ -1,0 +1,12 @@
+{
+  "domain": "keraunos",
+  "name": "Keraunos Orages",
+  "codeowners": ["@gdepouilly"],
+  "config_flow": true,
+  "documentation": "https://github.com/gdepouilly/keronaus-ha",
+  "issue_tracker": "https://github.com/gdepouilly/keronaus-ha/issues",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "requirements": ["beautifulsoup4>=4.12.0"],
+  "version": "0.1.0"
+}
